@@ -1,31 +1,51 @@
 import tensorflow as tf
-import pickle
+import numpy as np
+import json
+import codecs
 
-weights_dict = {}
-train_graph = tf.Graph()
-with tf.Session(graph=train_graph) as sess:
-    saver = tf.train.import_meta_graph('./tmp/tfmodel/ens4_adv_inception_v3.ckpt.meta')
 
-    saver.restore(sess, "./tmp/tfmodel/ens4_adv_inception_v3.ckpt")
+class TFModel:
+    ## "./tmp/tfmodel/"
+    def __init__(self, relative_path, meta_name="ens4_adv_inception_v3.ckpt.meta",
+                 checkpoint="ens4_adv_inception_v3.ckpt"):
+        self.relative_path = relative_path
+        self.meta_name = meta_name
+        self.checkpoint = checkpoint
+        self.train_graph = tf.Graph()
+        with tf.Session(graph=self.train_graph) as sess:
+            self.saver = tf.train.import_meta_graph(relative_path + self.meta_name)
 
-    for n in tf.all_variables():
-        if n.name.endswith('weights:0'):
-            print(n.name, n.shape)
-            split_string = n.name.split("/")
-            weights_tuple = split_string[1:split_string.index('weights:0')]
 
-            target = weights_dict
-            for i, j in enumerate(weights_tuple):
-                if j not in target:
-                    target[j] = {}
+    def layers(self, node_type='weights:0'):
+        nodes = {}
+        with tf.Session(graph=self.train_graph) as sess:
+            for n in tf.all_variables():
+                if n.name.endswith(node_type):
+                    split_string = n.name.split("/")
+                    weights_tuple = split_string[:split_string.index(node_type)]
 
-                if i == len(weights_tuple) - 1:
-                    target[j] = {
-                        'shape': n.shape,
-                        'name': n.name,
-                        'array': train_graph.get_tensor_by_name(n.name).eval()
-                    }
-                else:
-                    target = target[j]
+                    target = nodes
+                    for j in weights_tuple:
+                        if j not in target:
+                            target[j] = {}
+                        target = target[j]
 
-pickle.dump(weights_dict, open('weights.pickle', 'wb'))
+        return nodes
+
+    def node(self, name, node_type='weights:0'):
+        ret = {'name': name, 'shape': [], 'array': []}
+        with tf.Session(graph=self.train_graph) as sess:
+            self.saver.restore(sess, self.relative_path + self.checkpoint)
+            t = self.train_graph.get_tensor_by_name(name + node_type).eval()
+            ret['shape'] = t.tolist()
+            ret['array'] = t.shape
+
+        return ret
+
+
+# json.dump({}, codecs.open(file_path, 'w', encoding='utf-8'),
+#           separators=(',', ':'), sort_keys=True, indent=4)
+
+# from model_loader import TFModel
+# a = TFModel("./tmp/tfmodel/")
+# a.node("InceptionV3/Conv2d_1a_3x3/")
