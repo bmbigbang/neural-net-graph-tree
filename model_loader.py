@@ -15,7 +15,6 @@ class TFModel:
         with tf.Session(graph=self.train_graph) as sess:
             self.saver = tf.train.import_meta_graph(relative_path + self.meta_name)
 
-
     def layers(self, node_type='weights:0'):
         nodes = {}
         with tf.Session(graph=self.train_graph) as sess:
