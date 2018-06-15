@@ -29,12 +29,12 @@ class TFModel:
         return nodes
 
     def node(self, name, node_type='weights:0'):
-        ret = {'name': name, 'shape': [], 'array': []}
+        ret = {'name': name, 'shape': [], 'weights': []}
         with tf.Session(graph=self.train_graph) as sess:
             self.saver.restore(sess, self.relative_path + self.checkpoint)
             t = self.train_graph.get_tensor_by_name(name + node_type).eval()
-            ret['shape'] = t.tolist()
-            ret['array'] = t.shape
+            ret['shape'] = t.shape
+            ret['weights'] = t.tolist()
 
         return ret
 

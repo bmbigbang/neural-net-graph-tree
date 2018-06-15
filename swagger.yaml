@@ -17,19 +17,51 @@ paths:
       operationId: "server.layers"
       tags:
         - "Layers"
-      summary: "The layers data structure supported by the server application"
-      description: "returns the list of layers within the model"
+      summary: "The layers data structure within the model"
+      description: "returns the nested dict of layer names within the model"
       responses:
         200:
           description: "Successful layers request"
           schema:
             type: "object"
             properties:
-                layers:
-                  type: "object"
+              layers:
+                type: "object"
         400:
           description: "The model was not found"
         404:
           description: "The layers of the model were not found"
+        default:
+          description: "Unexpected error"
+  /node:
+    get:
+      operationId: "server.node"
+      tags:
+        - "Node"
+      summary: "The node dictionary with the weights array"
+      description: "returns node data resolved by name within the model"
+      parameters:
+        - name: "name"
+          in: "query"
+          type: string
+          minLength: 1
+      responses:
+        200:
+          description: "Successful node request"
+          schema:
+            type: "object"
+            properties:
+                name:
+                  type: "string"
+                shape:
+                  type: "array"
+                  items:
+                    type: "array"
+                weights:
+                  type: "array"
+                  items:
+                    type: "array"
+        400:
+          description: "Node not found error"
         default:
           description: "Unexpected error"
