@@ -1,0 +1,35 @@
+swagger: "2.0"
+info:
+  description: "This is a sample server Petstore server."
+  version: "1.0.0"
+  title: "nngt"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+basePath: "/"
+
+# Paths supported by the server application
+paths:
+  /layers:
+    get:
+      operationId: "server.layers"
+      tags:
+        - "Layers"
+      summary: "The layers data structure supported by the server application"
+      description: "returns the list of layers within the model"
+      responses:
+        200:
+          description: "Successful layers request"
+          schema:
+            type: "object"
+            properties:
+                layers:
+                  type: "object"
+        400:
+          description: "The model was not found"
+        404:
+          description: "The layers of the model were not found"
+        default:
+          description: "Unexpected error"

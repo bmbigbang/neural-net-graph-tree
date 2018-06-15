@@ -1,11 +1,8 @@
 import tensorflow as tf
-import numpy as np
-import json
-import codecs
 
 
 class TFModel:
-    ## "./tmp/tfmodel/"
+    # "./tmp/tfmodel/"
     def __init__(self, relative_path, meta_name="ens4_adv_inception_v3.ckpt.meta",
                  checkpoint="ens4_adv_inception_v3.ckpt"):
         self.relative_path = relative_path
