@@ -1,4 +1,5 @@
 import connexion
+from flask_cors import CORS
 
 from model_loader import TFModel
 
@@ -29,6 +30,7 @@ def node(name):
 
 
 app.add_api('swagger.yaml')
+CORS(app.app)
 
 
 if __name__ == '__main__':
